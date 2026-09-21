@@ -11,6 +11,7 @@ namespace DonationAPI.DTOs
         public int CampaignId { get; set; }
         public string CampaignTitle { get; set; } = string.Empty;
         public decimal AllocatedAmount { get; set; }
+        public string Region { get; set; } = string.Empty;
         public string Status { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
     }
@@ -21,10 +22,12 @@ namespace DonationAPI.DTOs
         [Required] public string Purpose { get; set; } = string.Empty;
         [Required] public int CampaignId { get; set; }
         [Range(1, double.MaxValue)] public decimal AllocatedAmount { get; set; }
+        public Region Region { get; set; } = Region.North;
     }
 
     public class UpdateBeneficiaryStatusDto
     {
         [Required] public BeneficiaryStatus Status { get; set; }
     }
+
 }

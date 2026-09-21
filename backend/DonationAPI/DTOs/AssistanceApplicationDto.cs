@@ -1,5 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using DonationAPI.Models;
 using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
 
 namespace DonationAPI.DTOs
 {
@@ -28,6 +29,8 @@ namespace DonationAPI.DTOs
         public string? DocumentPath { get; set; }
         public string Status { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
+        public Region Region { get; set; } = Region.North;
+
         public class UpdateApplicationStatusDto
         {
             public int Status { get; set; } // 0=Pending,1=UnderVerification,2=Approved,3=Rejected,4=FundAllocated
@@ -38,6 +41,7 @@ namespace DonationAPI.DTOs
         {
             public int CampaignId { get; set; }
             public decimal AllocatedAmount { get; set; }
+            public Region Region { get; set; } = Region.North;
         }
     }
 

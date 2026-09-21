@@ -22,6 +22,88 @@ namespace DonationAPI.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
+            modelBuilder.Entity("DonationAPI.Models.ActivityLog", b =>
+                {
+                    b.Property<int>("ActivityLogId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("ActivityLogId"));
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("Context")
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("varchar(300)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ActivityLogId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ActivityLogs");
+                });
+
+            modelBuilder.Entity("DonationAPI.Models.AiAuditLog", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("DataAccessed")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Feature")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Model")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Outcome")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("RequestSummary")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ReviewState")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Role")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ToolUsed")
+                        .HasColumnType("longtext");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedAt");
+
+                    b.ToTable("AiAuditLogs");
+                });
+
             modelBuilder.Entity("DonationAPI.Models.AidDelivery", b =>
                 {
                     b.Property<int>("AidDeliveryId")
@@ -161,6 +243,13 @@ namespace DonationAPI.Migrations
                     b.Property<string>("Purpose")
                         .IsRequired()
                         .HasColumnType("longtext");
+
+                    b.Property<int>("Region")
+                        .HasColumnType("int");
+
+                    b.Property<string>("State")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -316,6 +405,65 @@ namespace DonationAPI.Migrations
                     b.ToTable("Donations");
                 });
 
+            modelBuilder.Entity("DonationAPI.Models.EmailPreferences", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("DonorReceipts")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("MonthlyReports")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("ProductUpdates")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("EmailPreferences");
+                });
+
+            modelBuilder.Entity("DonationAPI.Models.FaqEntry", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Answer")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<bool>("IsPublished")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("Question")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("FaqEntries");
+                });
+
             modelBuilder.Entity("DonationAPI.Models.Notification", b =>
                 {
                     b.Property<int>("NotificationId")
@@ -346,6 +494,37 @@ namespace DonationAPI.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Notifications");
+                });
+
+            modelBuilder.Entity("DonationAPI.Models.NotificationPreferences", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("CampaignMilestones")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("DonorSignups")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("EmailAlerts")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("WeeklyDigest")
+                        .HasColumnType("tinyint(1)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("NotificationPreferences");
                 });
 
             modelBuilder.Entity("DonationAPI.Models.Payment", b =>
@@ -413,6 +592,62 @@ namespace DonationAPI.Migrations
                     b.ToTable("Receipts");
                 });
 
+            modelBuilder.Entity("DonationAPI.Models.SecuritySettings", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("LoginAlertsEnabled")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("SecuritySettings");
+                });
+
+            modelBuilder.Entity("DonationAPI.Models.UrgentCampaign", b =>
+                {
+                    b.Property<int>("UrgentCampaignId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("UrgentCampaignId"));
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("RecipientCount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("SentAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.HasKey("UrgentCampaignId");
+
+                    b.ToTable("UrgentCampaigns");
+                });
+
             modelBuilder.Entity("DonationAPI.Models.User", b =>
                 {
                     b.Property<int>("UserId")
@@ -429,8 +664,17 @@ namespace DonationAPI.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("varchar(200)");
 
+                    b.Property<string>("FacebookId")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("GoogleId")
+                        .HasColumnType("longtext");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime?>("LastDonationReminderSentAt")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -438,7 +682,6 @@ namespace DonationAPI.Migrations
                         .HasColumnType("varchar(150)");
 
                     b.Property<string>("PasswordHash")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("Phone")
@@ -453,6 +696,17 @@ namespace DonationAPI.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("DonationAPI.Models.ActivityLog", b =>
+                {
+                    b.HasOne("DonationAPI.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DonationAPI.Models.AidDelivery", b =>
@@ -529,7 +783,29 @@ namespace DonationAPI.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("DonationAPI.Models.EmailPreferences", b =>
+                {
+                    b.HasOne("DonationAPI.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("DonationAPI.Models.Notification", b =>
+                {
+                    b.HasOne("DonationAPI.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DonationAPI.Models.NotificationPreferences", b =>
                 {
                     b.HasOne("DonationAPI.Models.User", "User")
                         .WithMany()
@@ -549,6 +825,17 @@ namespace DonationAPI.Migrations
                         .IsRequired();
 
                     b.Navigation("Donation");
+                });
+
+            modelBuilder.Entity("DonationAPI.Models.SecuritySettings", b =>
+                {
+                    b.HasOne("DonationAPI.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DonationAPI.Models.Campaign", b =>

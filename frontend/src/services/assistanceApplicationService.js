@@ -19,10 +19,11 @@ export const assistanceApplicationService = {
     const { data } = await api.patch(`/assistanceapplication/${id}/status`, { status });
     return data;
   },
-  async allocateFunds(id, campaignId, allocatedAmount) {
+  async allocateFunds(id, campaignId, allocatedAmount, region) {
     const { data } = await api.patch(`/assistanceapplication/${id}/allocate-funds`, {
       campaignId,
       allocatedAmount,
+      region,
     });
     return data;
   },

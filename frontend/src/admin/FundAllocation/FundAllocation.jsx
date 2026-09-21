@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import Sidebar from '../../components/Sidebar';
+import Topbar from '../../components/Topbar';
 import Loader from '../../components/Loader';
 import { beneficiaryService } from '../../services/beneficiaryService';
 import { toast } from 'react-toastify';
@@ -70,11 +70,10 @@ export default function FundAllocation() {
   };
 
   return (
-    <div style={{ display: 'flex' }}>
-      <Sidebar />
-      <div style={{ flex: 1, padding: 30, background: '#f8fafc', minHeight: '100vh', position: 'relative' }}>
+    <div style={{ background: '#f8fafc', minHeight: '100vh' }}>
+      <Topbar />
+      <div style={{ padding: 30, position: 'relative' }}>
 
-        {/* Header banner */}
         <div
           style={{
             position: 'relative',
@@ -104,7 +103,6 @@ export default function FundAllocation() {
           <DotGrid style={{ position: 'absolute', right: 20, top: 14, opacity: 0.6 }} />
         </div>
 
-        {/* Table card */}
         <div className="card" style={{ padding: 0, overflow: 'hidden', borderRadius: 14 }}>
           {loading ? (
             <div style={{ padding: 30 }}><Loader /></div>
@@ -230,7 +228,6 @@ export default function FundAllocation() {
           )}
         </div>
 
-        {/* Floating chat bubble */}
         <div
           style={{
             position: 'fixed', bottom: 24, right: 24,

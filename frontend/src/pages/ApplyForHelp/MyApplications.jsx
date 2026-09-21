@@ -46,11 +46,11 @@ export default function MyApplications() {
                     {a.status}
                   </span>
                 </div>
-                <p style={{ color: '#6b7280', marginTop: 6 }}>{a.reason}</p>
+                <p style={{ color: 'var(--text-muted)', marginTop: 6 }}>{a.reason}</p>
                 <p style={{ marginTop: 6 }}>
                   <strong>Amount Requested:</strong> ₹{a.amountRequired.toLocaleString()}
                 </p>
-                <p style={{ fontSize: 13, color: '#9ca3af', marginTop: 6 }}>
+                <p style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 6 }}>
                   Submitted {new Date(a.createdAt).toLocaleDateString()}
                 </p>
               </div>

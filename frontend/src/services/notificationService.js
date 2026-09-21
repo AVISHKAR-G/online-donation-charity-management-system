@@ -41,4 +41,20 @@ export const notificationService = {
       (a, b) => new Date(b.date) - new Date(a.date)
     );
   },
+
+  // Admin-side notifications (NotificationController.cs) — used by the admin Topbar bell
+  async getRecent() {
+    const { data } = await api.get('/notification');
+    return data;
+  },
+  async getUnreadCount() {
+    const { data } = await api.get('/notification/unread-count');
+    return data.count;
+  },
+  async markAsRead(id) {
+    await api.patch(`/notification/${id}/read`);
+  },
+  async markAllAsRead() {
+    await api.patch('/notification/read-all');
+  },
 };

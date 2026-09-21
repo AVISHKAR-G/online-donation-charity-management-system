@@ -1,0 +1,10 @@
+.vs/
+bin/
+obj/
+node_modules/
+.vite/
+*.user
+*.suo
+*.log
+.env
+.env.*

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import Sidebar from '../../components/Sidebar';
+import Topbar from '../../components/Topbar';
 import Loader from '../../components/Loader';
 import UserHistoryTabs from '../../components/UserHistoryTabs';
 import { userService } from '../../services/userService';
@@ -49,9 +49,9 @@ export default function Users() {
   const closeHistory = () => { setHistoryUser(null); setHistory(null); };
 
   return (
-    <div style={{ display: 'flex' }}>
-      <Sidebar />
-      <div style={{ flex: 1, padding: 30, background: '#f8fafc', minHeight: '100vh', position: 'relative' }}>
+    <div style={{ background: '#f8fafc', minHeight: '100vh' }}>
+      <Topbar />
+      <div style={{ padding: 30, position: 'relative' }}>
 
         {/* Header banner */}
         <div

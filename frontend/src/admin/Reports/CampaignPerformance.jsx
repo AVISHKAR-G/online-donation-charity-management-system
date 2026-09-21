@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import Sidebar from '../../components/Sidebar';
+import Topbar from '../../components/Topbar';
 import Loader from '../../components/Loader';
 import { campaignService } from '../../services/campaignService';
 
@@ -24,9 +24,9 @@ export default function CampaignPerformance() {
   };
 
   return (
-    <div style={{ display: 'flex' }}>
-      <Sidebar />
-      <div style={{ flex: 1, padding: 30 }}>
+    <div style={{ background: '#f8fafc', minHeight: '100vh' }}>
+      <Topbar />
+      <div style={{ padding: 30 }}>
         <h1 style={{ marginBottom: 20 }}>Campaign Performance</h1>
         <div className="card">
           {loading ? <Loader /> : (

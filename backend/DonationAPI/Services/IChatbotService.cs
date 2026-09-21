@@ -1,7 +1,9 @@
-﻿namespace DonationAPI.Services
+﻿using DonationAPI.DTOs;
+
+namespace DonationAPI.Services
 {
     public interface IChatbotService
     {
-        Task<string> AskAsync(string userMessage);
+        Task<ChatResponseDto> AskAsync(ChatRequestDto request, CancellationToken ct = default);
     }
 }

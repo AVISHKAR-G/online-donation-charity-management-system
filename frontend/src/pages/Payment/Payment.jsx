@@ -98,13 +98,13 @@ export default function Payment() {
         )}
         {status === 'verifying' && <Loader label="Verifying your payment..." />}
         {status === 'success' && (
-          <p style={{ fontSize: 18, color: '#16a34a' }}>
+          <p style={{ fontSize: 18, color: 'var(--primary)' }}>
             ✅ Payment successful! Generating your receipt...
           </p>
         )}
         {status === 'failed' && (
           <div>
-            <p style={{ fontSize: 18, color: '#dc2626', marginBottom: 16 }}>❌ {errorMsg}</p>
+            <p style={{ fontSize: 18, color: 'var(--danger)', marginBottom: 16 }}>❌ {errorMsg}</p>
             <button className="btn btn-primary" onClick={() => navigate(`/donate/${campaignId}`)}>
               Try Again
             </button>

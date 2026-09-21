@@ -17,6 +17,10 @@ export const authService = {
     const { data } = await api.post('/auth/facebook', { accessToken });
     return data;
   },
+  async changePassword(currentPassword, newPassword) {
+    const { data } = await api.put('/settings/password', { currentPassword, newPassword });
+    return data;
+  },
   logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');

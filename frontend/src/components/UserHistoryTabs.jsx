@@ -17,8 +17,8 @@ function useIsMobile(breakpoint = 768) {
   return isMobile;
 }
 
-const rowIcons = [Landmark, GraduationCap, Users2, HeartHandshake, Cross, ShieldCheck];
-const rowColors = [
+const rowIconsList = [Landmark, GraduationCap, Users2, HeartHandshake, Cross, ShieldCheck];
+const rowColorsLight = [
   { bg: '#dbeafe', fg: '#2563eb' },
   { bg: '#e0f2fe', fg: '#0284c7' },
   { bg: '#f3e8ff', fg: '#9333ea' },
@@ -26,10 +26,19 @@ const rowColors = [
   { bg: '#fef3c7', fg: '#d97706' },
   { bg: '#dcfce7', fg: '#16a34a' },
 ];
+const rowColorsDark = [
+  { bg: '#1e3a5f', fg: '#60a5fa' },
+  { bg: '#0c4a6e', fg: '#38bdf8' },
+  { bg: '#3b1e5e', fg: '#c084fc' },
+  { bg: '#4a1942', fg: '#f472b6' },
+  { bg: '#4a3208', fg: '#fbbf24' },
+  { bg: '#14532d', fg: '#4ade80' },
+];
 
-function RowIcon({ index, size = 38, iconSize = 18 }) {
-  const Icon = rowIcons[index % rowIcons.length];
-  const { bg, fg } = rowColors[index % rowColors.length];
+function RowIcon({ index, isDark, size = 38, iconSize = 18 }) {
+  const Icon = rowIconsList[index % rowIconsList.length];
+  const palette = isDark ? rowColorsDark : rowColorsLight;
+  const { bg, fg } = palette[index % palette.length];
   return (
     <div style={{
       width: size, height: size, borderRadius: 10, background: bg,
@@ -53,13 +62,6 @@ function UpiBadge() {
   );
 }
 
-const thStyle = {
-  color: '#fff', padding: '14px 20px', textAlign: 'left', fontSize: 13,
-  letterSpacing: 0.4, textTransform: 'uppercase', fontWeight: 700,
-};
-const tdStyle = { padding: '16px 20px', verticalAlign: 'middle' };
-const gradientHeader = { background: 'linear-gradient(90deg, #2563eb 0%, #9333ea 45%, #db2777 75%, #f97316 100%)' };
-
 function ThLabel({ icon: Icon, children }) {
   return (
     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
@@ -70,40 +72,41 @@ function ThLabel({ icon: Icon, children }) {
 
 /* ---------- Mobile card row helpers ---------- */
 
-function MobileFieldRow({ label, children }) {
+function MobileFieldRow({ label, children, isDark }) {
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0' }}>
-      <span style={{ fontSize: 12.5, color: '#9ca3af', fontWeight: 600 }}>{label}</span>
-      <span style={{ fontSize: 13.5, color: '#111827', fontWeight: 600 }}>{children}</span>
+      <span style={{ fontSize: 12.5, color: isDark ? '#94a3b8' : '#9ca3af', fontWeight: 600 }}>{label}</span>
+      <span style={{ fontSize: 13.5, color: isDark ? '#f1f5f9' : '#111827', fontWeight: 600 }}>{children}</span>
     </div>
   );
 }
 
-function MobileCard({ children }) {
+function MobileCard({ children, isDark }) {
   return (
     <div style={{
-      background: '#fff', borderRadius: 14, padding: '16px 18px',
-      boxShadow: '0 2px 8px rgba(0,0,0,0.06)', border: '1px solid #f3f4f6',
+      background: isDark ? '#1e293b' : '#fff', borderRadius: 14, padding: '16px 18px',
+      boxShadow: isDark ? '0 2px 8px rgba(0,0,0,0.25)' : '0 2px 8px rgba(0,0,0,0.06)',
+      border: `1px solid ${isDark ? '#334155' : '#f3f4f6'}`,
     }}>
       {children}
     </div>
   );
 }
 
-function DonationMobileCard({ d, index, openMessages, toggleMessage, statusLabel }) {
+function DonationMobileCard({ d, index, openMessages, toggleMessage, statusLabel, isDark }) {
   return (
-    <MobileCard>
+    <MobileCard isDark={isDark}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
-        <RowIcon index={index} />
+        <RowIcon index={index} isDark={isDark} />
         <div style={{ flex: 1 }}>
-          <div style={{ fontWeight: 700, color: '#111827', fontSize: 14.5 }}>{d.campaignTitle}</div>
+          <div style={{ fontWeight: 700, color: isDark ? '#f1f5f9' : '#111827', fontSize: 14.5 }}>{d.campaignTitle}</div>
           {d.adminMessage && (
             <button
               onClick={() => toggleMessage(d.donationId)}
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: 5,
                 background: 'none', border: 'none', padding: 0,
-                fontSize: 12.5, cursor: 'pointer', color: '#7c3aed', fontWeight: 500, marginTop: 2,
+                fontSize: 12.5, cursor: 'pointer', color: isDark ? '#4ade80' : '#16a34a', fontWeight: 500, marginTop: 2,
               }}
             >
               <MessageCircle size={12} />
@@ -115,24 +118,25 @@ function DonationMobileCard({ d, index, openMessages, toggleMessage, statusLabel
 
       {d.adminMessage && openMessages[d.donationId] && (
         <div style={{
-          fontSize: 13, color: '#4b5563', fontStyle: 'italic', background: '#f9fafb',
-          border: '1px solid #f0f0f0', borderRadius: 6, padding: '8px 12px', marginBottom: 10,
+          fontSize: 13, color: isDark ? '#cbd5e1' : '#4b5563', fontStyle: 'italic',
+          background: isDark ? '#0f172a' : '#f9fafb',
+          border: `1px solid ${isDark ? '#334155' : '#f0f0f0'}`, borderRadius: 6, padding: '8px 12px', marginBottom: 10,
         }}>
           {d.adminMessage}
         </div>
       )}
 
-      <div style={{ borderTop: '1px solid #f3f4f6', paddingTop: 6 }}>
-        <MobileFieldRow label="Amount">
-          <span style={{ color: '#16a34a', fontWeight: 700 }}>₹{d.amount.toLocaleString()}</span>
+      <div style={{ borderTop: `1px solid ${isDark ? '#334155' : '#f3f4f6'}`, paddingTop: 6 }}>
+        <MobileFieldRow label="Amount" isDark={isDark}>
+          <span style={{ color: isDark ? '#4ade80' : '#16a34a', fontWeight: 700 }}>₹{d.amount.toLocaleString()}</span>
         </MobileFieldRow>
-        <MobileFieldRow label="Method">
+        <MobileFieldRow label="Method" isDark={isDark}>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
             {d.paymentMethod}
             {d.paymentMethod === 'UPI' && <UpiBadge />}
           </span>
         </MobileFieldRow>
-        <MobileFieldRow label="Status">
+        <MobileFieldRow label="Status" isDark={isDark}>
           <span
             className={`badge ${d.status === 'Approved' ? 'badge-success' : d.status === 'Rejected' ? 'badge-danger' : 'badge-info'}`}
             style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}
@@ -141,9 +145,9 @@ function DonationMobileCard({ d, index, openMessages, toggleMessage, statusLabel
             {d.status === 'Pending' ? 'Payment Received – Pending Approval' : statusLabel(d.status)}
           </span>
         </MobileFieldRow>
-        <MobileFieldRow label="Date">
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, color: '#6b7280', fontWeight: 500 }}>
-            <Calendar size={13} color="#9ca3af" />
+        <MobileFieldRow label="Date" isDark={isDark}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, color: isDark ? '#94a3b8' : '#6b7280', fontWeight: 500 }}>
+            <Calendar size={13} color={isDark ? '#64748b' : '#9ca3af'} />
             {new Date(d.date).toLocaleDateString()}
           </span>
         </MobileFieldRow>
@@ -152,26 +156,26 @@ function DonationMobileCard({ d, index, openMessages, toggleMessage, statusLabel
   );
 }
 
-function ApplicationMobileCard({ a, index }) {
+function ApplicationMobileCard({ a, index, isDark }) {
   return (
-    <MobileCard>
+    <MobileCard isDark={isDark}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
-        <RowIcon index={index} />
-        <span style={{ fontWeight: 700, color: '#111827', fontSize: 14.5 }}>{a.type}</span>
+        <RowIcon index={index} isDark={isDark} />
+        <span style={{ fontWeight: 700, color: isDark ? '#f1f5f9' : '#111827', fontSize: 14.5 }}>{a.type}</span>
       </div>
-      <div style={{ borderTop: '1px solid #f3f4f6', paddingTop: 6 }}>
-        <MobileFieldRow label="Amount Requested">
-          <span style={{ color: '#2563eb', fontWeight: 700 }}>₹{a.amountRequired.toLocaleString()}</span>
+      <div style={{ borderTop: `1px solid ${isDark ? '#334155' : '#f3f4f6'}`, paddingTop: 6 }}>
+        <MobileFieldRow label="Amount Requested" isDark={isDark}>
+          <span style={{ color: isDark ? '#4ade80' : '#16a34a', fontWeight: 700 }}>₹{a.amountRequired.toLocaleString()}</span>
         </MobileFieldRow>
-        <MobileFieldRow label="Status">
+        <MobileFieldRow label="Status" isDark={isDark}>
           <span className="badge badge-info">{a.status}</span>
         </MobileFieldRow>
-        <MobileFieldRow label="Document">
-          {a.documentPath ? <a href={a.documentPath} target="_blank" rel="noreferrer">View</a> : '-'}
+        <MobileFieldRow label="Document" isDark={isDark}>
+          {a.documentPath ? <a href={a.documentPath} target="_blank" rel="noreferrer" style={{ color: isDark ? '#4ade80' : undefined }}>View</a> : '-'}
         </MobileFieldRow>
-        <MobileFieldRow label="Date">
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, color: '#6b7280', fontWeight: 500 }}>
-            <Calendar size={13} color="#9ca3af" />
+        <MobileFieldRow label="Date" isDark={isDark}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, color: isDark ? '#94a3b8' : '#6b7280', fontWeight: 500 }}>
+            <Calendar size={13} color={isDark ? '#64748b' : '#9ca3af'} />
             {new Date(a.createdAt).toLocaleDateString()}
           </span>
         </MobileFieldRow>
@@ -180,26 +184,26 @@ function ApplicationMobileCard({ a, index }) {
   );
 }
 
-function AidMobileCard({ d, index }) {
+function AidMobileCard({ d, index, isDark }) {
   return (
-    <MobileCard>
+    <MobileCard isDark={isDark}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
-        <RowIcon index={index} />
-        <span style={{ fontWeight: 700, color: '#111827', fontSize: 14.5 }}>#{d.applicationId}</span>
+        <RowIcon index={index} isDark={isDark} />
+        <span style={{ fontWeight: 700, color: isDark ? '#f1f5f9' : '#111827', fontSize: 14.5 }}>#{d.applicationId}</span>
       </div>
-      <div style={{ borderTop: '1px solid #f3f4f6', paddingTop: 6 }}>
-        <MobileFieldRow label="Amount">
-          <span style={{ color: '#9333ea', fontWeight: 700 }}>₹{d.amountDelivered.toLocaleString()}</span>
+      <div style={{ borderTop: `1px solid ${isDark ? '#334155' : '#f3f4f6'}`, paddingTop: 6 }}>
+        <MobileFieldRow label="Amount" isDark={isDark}>
+          <span style={{ color: isDark ? '#4ade80' : '#16a34a', fontWeight: 700 }}>₹{d.amountDelivered.toLocaleString()}</span>
         </MobileFieldRow>
-        <MobileFieldRow label="Method">{d.method}</MobileFieldRow>
-        <MobileFieldRow label="Status">
+        <MobileFieldRow label="Method" isDark={isDark}>{d.method}</MobileFieldRow>
+        <MobileFieldRow label="Status" isDark={isDark}>
           <span className="badge badge-success">{d.status}</span>
         </MobileFieldRow>
-        <MobileFieldRow label="Notes">{d.notes || '-'}</MobileFieldRow>
-        <MobileFieldRow label="Delivered">
+        <MobileFieldRow label="Notes" isDark={isDark}>{d.notes || '-'}</MobileFieldRow>
+        <MobileFieldRow label="Delivered" isDark={isDark}>
           {d.deliveredAt ? (
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, color: '#6b7280', fontWeight: 500 }}>
-              <Calendar size={13} color="#9ca3af" />
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, color: isDark ? '#94a3b8' : '#6b7280', fontWeight: 500 }}>
+              <Calendar size={13} color={isDark ? '#64748b' : '#9ca3af'} />
               {new Date(d.deliveredAt).toLocaleDateString()}
             </span>
           ) : '-'}
@@ -211,7 +215,7 @@ function AidMobileCard({ d, index }) {
 
 /* ---------- Stats footer ---------- */
 
-function StatsFooter({ donations }) {
+function StatsFooter({ donations, isDark }) {
   const totalDonated = donations.reduce((sum, d) => sum + d.amount, 0);
   const totalTransactions = donations.length;
   const successCount = donations.filter((d) => d.status === 'Approved').length;
@@ -227,24 +231,24 @@ function StatsFooter({ donations }) {
 
   const cards = [
     {
-      icon: HandHeart, iconBg: '#9333ea', bg: '#f5f3ff',
+      icon: HandHeart, iconBg: '#16a34a', bg: isDark ? '#14532d' : '#f0fdf4',
       label: 'Total Donated', value: `₹${totalDonated.toLocaleString()}`,
-      sub: `Across ${totalTransactions} donations`, valueColor: '#7c3aed',
+      sub: `Across ${totalTransactions} donations`, valueColor: isDark ? '#4ade80' : '#16a34a',
     },
     {
-      icon: FileText, iconBg: '#16a34a', bg: '#f0fdf4',
+      icon: FileText, iconBg: '#2563eb', bg: isDark ? '#1e3a8a' : '#eff6ff',
       label: 'Total Transactions', value: totalTransactions,
-      sub: 'Successful donations', valueColor: '#16a34a',
+      sub: 'Successful donations', valueColor: isDark ? '#60a5fa' : '#2563eb',
     },
     {
-      icon: Award, iconBg: '#2563eb', bg: '#eff6ff',
+      icon: Award, iconBg: '#16a34a', bg: isDark ? '#14532d' : '#f0fdf4',
       label: 'Success Rate', value: `${successRate}%`,
-      sub: 'All donations successful', valueColor: '#2563eb',
+      sub: 'All donations successful', valueColor: isDark ? '#4ade80' : '#16a34a',
     },
     {
-      icon: Calendar, iconBg: '#ea580c', bg: '#fff7ed',
+      icon: Calendar, iconBg: '#ea580c', bg: isDark ? '#7c2d12' : '#fff7ed',
       label: 'Member Since', value: memberSince,
-      sub: 'Thank you for your support! ❤️', valueColor: '#ea580c',
+      sub: 'Thank you for your support! ❤️', valueColor: isDark ? '#fb923c' : '#ea580c',
     },
   ];
 
@@ -270,9 +274,9 @@ function StatsFooter({ donations }) {
               <Icon size={19} color="#fff" />
             </div>
             <div>
-              <div style={{ fontSize: 13.5, color: '#374151', fontWeight: 600 }}>{c.label}</div>
+              <div style={{ fontSize: 13.5, color: isDark ? '#cbd5e1' : '#374151', fontWeight: 600 }}>{c.label}</div>
               <div style={{ fontSize: 22, fontWeight: 800, color: c.valueColor, marginTop: 2 }}>{c.value}</div>
-              <div style={{ fontSize: 12.5, color: '#6b7280', marginTop: 2 }}>{c.sub}</div>
+              <div style={{ fontSize: 12.5, color: isDark ? '#94a3b8' : '#6b7280', marginTop: 2 }}>{c.sub}</div>
             </div>
           </div>
         );
@@ -283,16 +287,37 @@ function StatsFooter({ donations }) {
 
 /* ---------- Main component ---------- */
 
-export default function UserHistoryTabs({ history }) {
+const ACTIVE_COLOR_LIGHT = '#16a34a';
+const ACTIVE_COLOR_DARK = '#4ade80';
+
+export default function UserHistoryTabs({ history, isDark = false }) {
   const [tab, setTab] = useState('donations');
   const [openMessages, setOpenMessages] = useState({});
   const { donations = [], applications = [], aidReceived = [] } = history || {};
   const isMobile = useIsMobile();
 
+  const activeColor = isDark ? ACTIVE_COLOR_DARK : ACTIVE_COLOR_LIGHT;
+  const inactiveColor = isDark ? '#64748b' : '#9ca3af';
+  const inactiveTextColor = isDark ? '#94a3b8' : '#6b7280';
+  const borderColor = isDark ? '#334155' : '#f1f5f9';
+  const tabsBorderColor = isDark ? '#334155' : '#e5e7eb';
+  const headerBg = isDark ? '#14532d' : '#e8f5ee';
+  const headerText = isDark ? '#86efac' : '#166534';
+  const rowText = isDark ? '#f1f5f9' : '#111827';
+  const rowSubText = isDark ? '#94a3b8' : '#6b7280';
+  const emptyText = isDark ? '#94a3b8' : '#374151';
+
+  const thStyle = {
+    color: headerText, padding: '10px 16px', textAlign: 'left', fontSize: 11.5,
+    letterSpacing: 0.4, textTransform: 'uppercase', fontWeight: 700,
+  };
+  const tdStyle = { padding: '12px 16px', verticalAlign: 'middle' };
+  const headerRowStyle = { background: headerBg };
+
   const tabs = [
-    { key: 'donations', label: `Donations (${donations.length})`, icon: Heart, color: '#9333ea' },
-    { key: 'applications', label: `Applications (${applications.length})`, icon: User, color: '#16a34a' },
-    { key: 'aid', label: `Aid Received (${aidReceived.length})`, icon: Gift, color: '#2563eb' },
+    { key: 'donations', label: `Donations (${donations.length})`, icon: Heart },
+    { key: 'applications', label: `Applications (${applications.length})`, icon: User },
+    { key: 'aid', label: `Aid Received (${aidReceived.length})`, icon: Gift },
   ];
 
   const statusLabel = (status) => (status === 'Approved' ? 'Donated Successfully' : status);
@@ -300,7 +325,7 @@ export default function UserHistoryTabs({ history }) {
 
   return (
     <div>
-      <div style={{ display: 'flex', gap: 4, borderBottom: '1px solid #e5e7eb', marginBottom: 20, padding: '0 4px', overflowX: 'auto' }}>
+      <div style={{ display: 'flex', gap: 4, borderBottom: `1px solid ${tabsBorderColor}`, marginBottom: 20, padding: '0 4px', overflowX: 'auto' }}>
         {tabs.map((t) => {
           const Icon = t.icon;
           const active = tab === t.key;
@@ -309,20 +334,20 @@ export default function UserHistoryTabs({ history }) {
               key={t.key}
               onClick={() => setTab(t.key)}
               style={{
-                display: 'flex', alignItems: 'center', gap: 8,
-                padding: '14px 18px',
+                display: 'flex', alignItems: 'center', gap: 6,
+                padding: '11px 14px',
                 border: 'none',
                 background: 'none',
-                borderBottom: active ? `2.5px solid ${t.color}` : '2.5px solid transparent',
+                borderBottom: active ? `2px solid ${activeColor}` : '2px solid transparent',
                 fontWeight: active ? 700 : 500,
-                fontSize: 14.5,
-                color: active ? t.color : '#6b7280',
+                fontSize: 13,
+                color: active ? activeColor : inactiveTextColor,
                 cursor: 'pointer',
                 transition: 'color 0.15s ease',
                 whiteSpace: 'nowrap',
               }}
             >
-              <Icon size={16} fill={active ? t.color : 'none'} color={active ? t.color : '#9ca3af'} />
+              <Icon size={16} fill={active ? activeColor : 'none'} color={active ? activeColor : inactiveColor} />
               {t.label}
             </button>
           );
@@ -330,7 +355,7 @@ export default function UserHistoryTabs({ history }) {
       </div>
 
       {tab === 'donations' && (
-        donations.length === 0 ? <p style={{ padding: '0 20px' }}>No donations yet.</p> : (
+        donations.length === 0 ? <p style={{ padding: '0 20px', color: emptyText }}>No donations yet.</p> : (
           <>
             {isMobile ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -342,14 +367,15 @@ export default function UserHistoryTabs({ history }) {
                     openMessages={openMessages}
                     toggleMessage={toggleMessage}
                     statusLabel={statusLabel}
+                    isDark={isDark}
                   />
                 ))}
               </div>
             ) : (
-              <div style={{ borderRadius: 12, overflowX: 'auto', WebkitOverflowScrolling: 'touch', border: '1px solid #f1f5f9' }}>
+              <div style={{ borderRadius: 12, overflowX: 'auto', WebkitOverflowScrolling: 'touch', border: `1px solid ${borderColor}` }}>
                 <table style={{ width: '100%', minWidth: 700, borderCollapse: 'collapse' }}>
                   <thead>
-                    <tr style={gradientHeader}>
+                    <tr style={headerRowStyle}>
                       <th style={thStyle}><ThLabel icon={Flag}>Campaign</ThLabel></th>
                       <th style={thStyle}><ThLabel icon={IndianRupee}>Amount</ThLabel></th>
                       <th style={thStyle}><ThLabel icon={CreditCard}>Method</ThLabel></th>
@@ -360,19 +386,19 @@ export default function UserHistoryTabs({ history }) {
                   <tbody>
                     {donations.map((d, i) => (
                       <React.Fragment key={d.donationId}>
-                        <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
+                        <tr style={{ borderBottom: `1px solid ${borderColor}` }}>
                           <td style={tdStyle}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                              <RowIcon index={i} />
+                              <RowIcon index={i} isDark={isDark} />
                               <div>
-                                <div style={{ fontWeight: 600, color: '#111827' }}>{d.campaignTitle}</div>
+                                <div style={{ fontWeight: 600, color: rowText }}>{d.campaignTitle}</div>
                                 {d.adminMessage && (
                                   <button
                                     onClick={() => toggleMessage(d.donationId)}
                                     style={{
                                       display: 'inline-flex', alignItems: 'center', gap: 5,
                                       background: 'none', border: 'none',
-                                      padding: 0, fontSize: 12.5, cursor: 'pointer', color: '#7c3aed',
+                                      padding: 0, fontSize: 12.5, cursor: 'pointer', color: activeColor,
                                       marginTop: 4, fontWeight: 500,
                                     }}
                                   >
@@ -383,8 +409,8 @@ export default function UserHistoryTabs({ history }) {
                               </div>
                             </div>
                           </td>
-                          <td style={{ ...tdStyle, color: '#16a34a', fontWeight: 700 }}>₹{d.amount.toLocaleString()}</td>
-                          <td style={tdStyle}>
+                          <td style={{ ...tdStyle, color: activeColor, fontWeight: 700 }}>₹{d.amount.toLocaleString()}</td>
+                          <td style={{ ...tdStyle, color: rowText }}>
                             <div>{d.paymentMethod}</div>
                             {d.paymentMethod === 'UPI' && <UpiBadge />}
                           </td>
@@ -397,23 +423,23 @@ export default function UserHistoryTabs({ history }) {
                               {d.status === 'Pending' ? 'Payment Received – Pending Approval' : statusLabel(d.status)}
                             </span>
                           </td>
-                          <td style={{ ...tdStyle, color: '#6b7280' }}>
+                          <td style={{ ...tdStyle, color: rowSubText }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                              <Calendar size={13} color="#9ca3af" />
+                              <Calendar size={13} color={inactiveColor} />
                               {new Date(d.date).toLocaleDateString()}
                             </div>
                           </td>
                         </tr>
                         {d.adminMessage && openMessages[d.donationId] && (
-                          <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
+                          <tr style={{ borderBottom: `1px solid ${borderColor}` }}>
                             <td colSpan={5} style={{ padding: '0 20px 14px 70px' }}>
                               <div
                                 style={{
                                   fontSize: 13,
-                                  color: '#4b5563',
+                                  color: isDark ? '#cbd5e1' : '#4b5563',
                                   fontStyle: 'italic',
-                                  background: '#f9fafb',
-                                  border: '1px solid #f0f0f0',
+                                  background: isDark ? '#0f172a' : '#f9fafb',
+                                  border: `1px solid ${isDark ? '#334155' : '#f0f0f0'}`,
                                   borderRadius: 6,
                                   padding: '8px 12px',
                                   maxWidth: 480,
@@ -431,24 +457,24 @@ export default function UserHistoryTabs({ history }) {
               </div>
             )}
 
-            <StatsFooter donations={donations} />
+            <StatsFooter donations={donations} isDark={isDark} />
           </>
         )
       )}
 
       {tab === 'applications' && (
-        applications.length === 0 ? <p style={{ padding: '0 20px' }}>No applications yet.</p> : (
+        applications.length === 0 ? <p style={{ padding: '0 20px', color: emptyText }}>No applications yet.</p> : (
           isMobile ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {applications.map((a, i) => (
-                <ApplicationMobileCard key={a.applicationId} a={a} index={i} />
+                <ApplicationMobileCard key={a.applicationId} a={a} index={i} isDark={isDark} />
               ))}
             </div>
           ) : (
-            <div style={{ borderRadius: 12, overflowX: 'auto', WebkitOverflowScrolling: 'touch', border: '1px solid #f1f5f9' }}>
+            <div style={{ borderRadius: 12, overflowX: 'auto', WebkitOverflowScrolling: 'touch', border: `1px solid ${borderColor}` }}>
               <table style={{ width: '100%', minWidth: 700, borderCollapse: 'collapse' }}>
                 <thead>
-                  <tr style={gradientHeader}>
+                  <tr style={headerRowStyle}>
                     <th style={thStyle}>Type</th>
                     <th style={thStyle}>Amount Requested</th>
                     <th style={thStyle}>Status</th>
@@ -458,19 +484,19 @@ export default function UserHistoryTabs({ history }) {
                 </thead>
                 <tbody>
                   {applications.map((a, i) => (
-                    <tr key={a.applicationId} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                    <tr key={a.applicationId} style={{ borderBottom: `1px solid ${borderColor}` }}>
                       <td style={tdStyle}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                          <RowIcon index={i} />
-                          <span style={{ fontWeight: 600, color: '#111827' }}>{a.type}</span>
+                          <RowIcon index={i} isDark={isDark} />
+                          <span style={{ fontWeight: 600, color: rowText }}>{a.type}</span>
                         </div>
                       </td>
-                      <td style={{ ...tdStyle, color: '#2563eb', fontWeight: 700 }}>₹{a.amountRequired.toLocaleString()}</td>
+                      <td style={{ ...tdStyle, color: activeColor, fontWeight: 700 }}>₹{a.amountRequired.toLocaleString()}</td>
                       <td style={tdStyle}><span className="badge badge-info">{a.status}</span></td>
-                      <td style={tdStyle}>{a.documentPath ? <a href={a.documentPath} target="_blank" rel="noreferrer">View</a> : '-'}</td>
-                      <td style={{ ...tdStyle, color: '#6b7280' }}>
+                      <td style={{ ...tdStyle, color: rowText }}>{a.documentPath ? <a href={a.documentPath} target="_blank" rel="noreferrer" style={{ color: activeColor }}>View</a> : '-'}</td>
+                      <td style={{ ...tdStyle, color: rowSubText }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                          <Calendar size={13} color="#9ca3af" />
+                          <Calendar size={13} color={inactiveColor} />
                           {new Date(a.createdAt).toLocaleDateString()}
                         </div>
                       </td>
@@ -484,18 +510,18 @@ export default function UserHistoryTabs({ history }) {
       )}
 
       {tab === 'aid' && (
-        aidReceived.length === 0 ? <p style={{ padding: '0 20px' }}>No aid delivered yet.</p> : (
+        aidReceived.length === 0 ? <p style={{ padding: '0 20px', color: emptyText }}>No aid delivered yet.</p> : (
           isMobile ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {aidReceived.map((d, i) => (
-                <AidMobileCard key={d.aidDeliveryId} d={d} index={i} />
+                <AidMobileCard key={d.aidDeliveryId} d={d} index={i} isDark={isDark} />
               ))}
             </div>
           ) : (
-            <div style={{ borderRadius: 12, overflowX: 'auto', WebkitOverflowScrolling: 'touch', border: '1px solid #f1f5f9' }}>
+            <div style={{ borderRadius: 12, overflowX: 'auto', WebkitOverflowScrolling: 'touch', border: `1px solid ${borderColor}` }}>
               <table style={{ width: '100%', minWidth: 700, borderCollapse: 'collapse' }}>
                 <thead>
-                  <tr style={gradientHeader}>
+                  <tr style={headerRowStyle}>
                     <th style={thStyle}>Application ID</th>
                     <th style={thStyle}>Amount</th>
                     <th style={thStyle}>Method</th>
@@ -506,21 +532,21 @@ export default function UserHistoryTabs({ history }) {
                 </thead>
                 <tbody>
                   {aidReceived.map((d, i) => (
-                    <tr key={d.aidDeliveryId} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                    <tr key={d.aidDeliveryId} style={{ borderBottom: `1px solid ${borderColor}` }}>
                       <td style={tdStyle}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                          <RowIcon index={i} />
-                          <span style={{ fontWeight: 600, color: '#111827' }}>#{d.applicationId}</span>
+                          <RowIcon index={i} isDark={isDark} />
+                          <span style={{ fontWeight: 600, color: rowText }}>#{d.applicationId}</span>
                         </div>
                       </td>
-                      <td style={{ ...tdStyle, color: '#9333ea', fontWeight: 700 }}>₹{d.amountDelivered.toLocaleString()}</td>
-                      <td style={tdStyle}>{d.method}</td>
+                      <td style={{ ...tdStyle, color: activeColor, fontWeight: 700 }}>₹{d.amountDelivered.toLocaleString()}</td>
+                      <td style={{ ...tdStyle, color: rowText }}>{d.method}</td>
                       <td style={tdStyle}><span className="badge badge-success">{d.status}</span></td>
-                      <td style={tdStyle}>{d.notes || '-'}</td>
-                      <td style={{ ...tdStyle, color: '#6b7280' }}>
+                      <td style={{ ...tdStyle, color: rowText }}>{d.notes || '-'}</td>
+                      <td style={{ ...tdStyle, color: rowSubText }}>
                         {d.deliveredAt ? (
                           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                            <Calendar size={13} color="#9ca3af" />
+                            <Calendar size={13} color={inactiveColor} />
                             {new Date(d.deliveredAt).toLocaleDateString()}
                           </div>
                         ) : '-'}

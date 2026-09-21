@@ -11,6 +11,15 @@ namespace DonationAPI.Models
         FundsDisbursed = 4
     }
 
+    public enum Region
+    {
+        North = 0,
+        South = 1,
+        East = 2,
+        West = 3,
+        Central = 4
+    }
+
     public class Beneficiary
     {
         public int BeneficiaryId { get; set; }
@@ -31,6 +40,11 @@ namespace DonationAPI.Models
         public string Phone { get; set; } = string.Empty;
 
         public string? Address { get; set; }
+
+        public Region Region { get; set; } = Region.North;
+
+        [MaxLength(100)]
+        public string? State { get; set; }
 
         [Range(0, double.MaxValue)]
         public decimal AllocatedAmount { get; set; }

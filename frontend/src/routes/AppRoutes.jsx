@@ -10,6 +10,7 @@ import Donate from '../pages/Donate/Donate';
 import Payment from '../pages/Payment/Payment';
 import Receipt from '../pages/Receipt/Receipt';
 import Profile from '../pages/Profile/Profile';
+import ChangePassword from '../pages/Profile/ChangePassword';
 import Contact from '../pages/Contact/Contact';
 import About from '../pages/About/About';
 import ApplyForHelp from '../pages/ApplyForHelp/ApplyForHelp';
@@ -25,9 +26,10 @@ import AdminDonations from '../admin/Donations/Donations';
 import AdminPayments from '../admin/Payments/Payments';
 import AdminBeneficiaries from '../admin/Beneficiaries/Beneficiaries';
 import AdminFundAllocation from '../admin/FundAllocation/FundAllocation';
+import AdminUrgentCampaign from '../admin/UrgentCampaign/UrgentCampaign';
 import AdminReports from '../admin/Reports/Reports';
 import AdminSettings from '../admin/Settings/Settings';
-import AdminUrgentCampaign from '../admin/UrgentCampaign/UrgentCampaign';
+
 export default function AppRoutes() {
   return (
     <Routes>
@@ -46,6 +48,7 @@ export default function AppRoutes() {
       <Route path="/payment/:campaignId" element={<ProtectedRoute><Payment /></ProtectedRoute>} />
       <Route path="/receipt/:id" element={<ProtectedRoute><Receipt /></ProtectedRoute>} />
       <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+      <Route path="/change-password" element={<ProtectedRoute><ChangePassword /></ProtectedRoute>} />
       <Route path="/apply-for-help" element={<ProtectedRoute><ApplyForHelp /></ProtectedRoute>} />
       <Route path="/my-applications" element={<ProtectedRoute><MyApplications /></ProtectedRoute>} />
       <Route path="/my-activity" element={<ProtectedRoute><MyActivity /></ProtectedRoute>} />

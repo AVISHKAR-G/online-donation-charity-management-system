@@ -20,17 +20,20 @@ namespace DonationAPI.Controllers
         private readonly IWebHostEnvironment _env;
         private readonly INotificationService _notificationService;
         private readonly IEmailService _emailService;
+        private readonly IDocumentValidationService _documentValidationService;
 
         public AssistanceApplicationController(
             AppDbContext context,
             IWebHostEnvironment env,
             INotificationService notificationService,
-            IEmailService emailService)
+            IEmailService emailService,
+            IDocumentValidationService documentValidationService)
         {
             _context = context;
             _env = env;
             _notificationService = notificationService;
             _emailService = emailService;
+            _documentValidationService = documentValidationService;
         }
 
         private static AssistanceApplicationResponseDto ToDto(AssistanceApplication a) => new()
@@ -58,15 +61,30 @@ namespace DonationAPI.Controllers
             string? documentPath = null;
             if (dto.Document is not null && dto.Document.Length > 0)
             {
+                // Read the upload into memory once so it can be used for both
+                // OCR validation and the on-disk save (IFormFile streams can't
+                // safely be read twice).
+                using var memoryStream = new MemoryStream();
+                await dto.Document.CopyToAsync(memoryStream);
+                memoryStream.Position = 0;
+
+                // OCR check — reject anything that doesn't look like a real Aadhar/PAN card
+                var validation = await _documentValidationService.ValidateAsync(memoryStream, dto.Document.FileName);
+                if (!validation.IsValid)
+                {
+                    return BadRequest(new { message = validation.Message });
+                }
+
                 var uploadsFolder = Path.Combine(_env.WebRootPath ?? "wwwroot", "uploads", "documents");
                 Directory.CreateDirectory(uploadsFolder);
 
                 var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(dto.Document.FileName)}";
                 var filePath = Path.Combine(uploadsFolder, fileName);
 
-                using (var stream = new FileStream(filePath, FileMode.Create))
+                memoryStream.Position = 0;
+                using (var fileOutStream = new FileStream(filePath, FileMode.Create))
                 {
-                    await dto.Document.CopyToAsync(stream);
+                    await memoryStream.CopyToAsync(fileOutStream);
                 }
 
                 documentPath = $"/uploads/documents/{fileName}";
@@ -176,6 +194,7 @@ namespace DonationAPI.Controllers
         }
 
         // PATCH /api/assistanceapplication/{id}/allocate-funds
+        // PATCH /api/assistanceapplication/{id}/allocate-funds
         [HttpPatch("{id}/allocate-funds")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AllocateFunds(int id, AllocateFundsDto dto)
@@ -192,6 +211,7 @@ namespace DonationAPI.Controllers
                 Purpose = application.Reason,
                 CampaignId = dto.CampaignId,
                 AllocatedAmount = dto.AllocatedAmount,
+                Region = dto.Region,
                 Status = 0,
                 ApplicationId = application.ApplicationId
             };

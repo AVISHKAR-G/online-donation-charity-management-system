@@ -135,6 +135,21 @@ namespace DonationAPI.Services
                 Percent = (int)Math.Round(c.PercentageCompleted)
             }).ToList();
 
+            // ---------- Beneficiaries by region ----------
+            var regionRows = await _context.Beneficiaries
+                .GroupBy(b => b.Region)
+                .Select(g => new { Region = g.Key, Count = g.Count() })
+                .ToListAsync();
+
+            var regionGrandTotal = regionRows.Sum(r => r.Count);
+            var beneficiariesByRegion = regionRows.Select(r => new RegionBreakdownDto
+            {
+                Region = r.Region.ToString(),
+                Percent = regionGrandTotal == 0 ? 0 : Math.Round((double)r.Count / regionGrandTotal * 100, 1)
+            })
+            .OrderByDescending(r => r.Percent)
+            .ToList();
+
             return new DashboardSummaryDto
             {
                 TotalDonations = totalDonations,
@@ -161,7 +176,7 @@ namespace DonationAPI.Services
                 UnreadNotifications = 0,
                 AdminAvatarUrl = null,
 
-                BeneficiariesByRegion = new List<RegionBreakdownDto>(),
+                BeneficiariesByRegion = beneficiariesByRegion,
 
                 RecentDonations = recentDonations,
                 TopCampaigns = topCampaigns,

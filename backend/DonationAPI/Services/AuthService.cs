@@ -15,19 +15,22 @@ namespace DonationAPI.Services
         private readonly INotificationService _notificationService;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IConfiguration _configuration;
+        private readonly IUrgentCampaignService _urgentCampaignService;
 
         public AuthService(
             AppDbContext context,
             JwtHelper jwtHelper,
             INotificationService notificationService,
             IHttpClientFactory httpClientFactory,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            IUrgentCampaignService urgentCampaignService)
         {
             _context = context;
             _jwtHelper = jwtHelper;
             _notificationService = notificationService;
             _httpClientFactory = httpClientFactory;
             _configuration = configuration;
+            _urgentCampaignService = urgentCampaignService;
         }
 
         public async Task<AuthResponseDto> RegisterAsync(RegisterDto dto)
@@ -48,6 +51,7 @@ namespace DonationAPI.Services
             await _context.SaveChangesAsync();
 
             await NotifyAdminsOfNewUser(user);
+            await SendUrgentCampaignToNewUser(user);
 
             var token = _jwtHelper.GenerateToken(user);
             return BuildResponse(user, token);
@@ -84,6 +88,7 @@ namespace DonationAPI.Services
                 throw new UnauthorizedAccessException("Google token validation failed.");
 
             var user = await _context.Users.FirstOrDefaultAsync(u => u.GoogleId == payload.Sub);
+            var isNewUser = false;
 
             if (user == null)
             {
@@ -105,12 +110,16 @@ namespace DonationAPI.Services
                         Role = UserRole.Donor
                     };
                     _context.Users.Add(user);
+                    isNewUser = true;
                 }
 
                 await _context.SaveChangesAsync();
 
-                if (user.UserId != 0)
+                if (isNewUser)
+                {
                     await NotifyAdminsOfNewUser(user);
+                    await SendUrgentCampaignToNewUser(user);
+                }
             }
 
             if (!user.IsActive)
@@ -159,6 +168,7 @@ namespace DonationAPI.Services
 
                 await _context.SaveChangesAsync();
                 await NotifyAdminsOfNewUser(user);
+                await SendUrgentCampaignToNewUser(user);
             }
 
             if (!user.IsActive)
@@ -182,6 +192,20 @@ namespace DonationAPI.Services
                     "New User Joined",
                     $"{user.Name} ({user.Email}) just registered on HopeCare."
                 );
+            }
+        }
+
+        private async Task SendUrgentCampaignToNewUser(User user)
+        {
+            // If there's an active urgent appeal, send it to the new signup too.
+            // Wrapped so a mail/SMTP hiccup never blocks registration/login.
+            try
+            {
+                await _urgentCampaignService.SendActiveCampaignToNewUserAsync(user);
+            }
+            catch (Exception)
+            {
+                // Already logged inside the email service.
             }
         }
 

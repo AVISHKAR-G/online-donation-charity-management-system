@@ -18,6 +18,16 @@ namespace DonationAPI.Data
         public DbSet<Notification> Notifications => Set<Notification>();
         public DbSet<ContactMessage> ContactMessages => Set<ContactMessage>();
 
+        public DbSet<UrgentCampaign> UrgentCampaigns => Set<UrgentCampaign>();
+        public DbSet<NotificationPreferences> NotificationPreferences => Set<NotificationPreferences>();
+        public DbSet<SecuritySettings> SecuritySettings => Set<SecuritySettings>();
+        public DbSet<EmailPreferences> EmailPreferences => Set<EmailPreferences>();
+        public DbSet<ActivityLog> ActivityLogs => Set<ActivityLog>();
+        public DbSet<FaqEntry> FaqEntries { get; set; }
+
+        // ---------- AI ----------
+        public DbSet<AiAuditLog> AiAuditLogs => Set<AiAuditLog>();
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -79,6 +89,50 @@ namespace DonationAPI.Data
             modelBuilder.Entity<Donation>().Property(d => d.Amount).HasPrecision(18, 2);
             modelBuilder.Entity<Payment>().Property(p => p.Amount).HasPrecision(18, 2);
             modelBuilder.Entity<Beneficiary>().Property(b => b.AllocatedAmount).HasPrecision(18, 2);
+
+            modelBuilder.Entity<NotificationPreferences>()
+                .HasOne(np => np.User)
+                .WithMany()
+                .HasForeignKey(np => np.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<NotificationPreferences>()
+                .HasIndex(np => np.UserId)
+                .IsUnique();
+
+            modelBuilder.Entity<SecuritySettings>()
+                .HasOne(s => s.User)
+                .WithMany()
+                .HasForeignKey(s => s.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<SecuritySettings>()
+                .HasIndex(s => s.UserId)
+                .IsUnique();
+
+            modelBuilder.Entity<EmailPreferences>()
+                .HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<EmailPreferences>()
+                .HasIndex(e => e.UserId)
+                .IsUnique();
+
+            // ActivityLog: many rows per user (not unique), oldest-safe on user delete via cascade
+            modelBuilder.Entity<ActivityLog>()
+                .HasOne(a => a.User)
+                .WithMany()
+                .HasForeignKey(a => a.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ActivityLog>()
+                .HasIndex(a => a.UserId);
+
+            // AiAuditLog: no foreign key to User on purpose, so audit rows survive user deletion
+            modelBuilder.Entity<AiAuditLog>()
+                .HasIndex(a => a.CreatedAt);
         }
     }
 }

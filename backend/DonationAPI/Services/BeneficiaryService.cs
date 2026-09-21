@@ -22,6 +22,7 @@ namespace DonationAPI.Services
             CampaignId = b.CampaignId,
             CampaignTitle = b.Campaign?.Title ?? "",
             AllocatedAmount = b.AllocatedAmount,
+            Region = b.Region.ToString(),
             Status = b.Status.ToString(),
             CreatedAt = b.CreatedAt
         };
@@ -46,6 +47,7 @@ namespace DonationAPI.Services
                 Purpose = dto.Purpose,
                 CampaignId = dto.CampaignId,
                 AllocatedAmount = dto.AllocatedAmount,
+                Region = dto.Region,
                 Status = BeneficiaryStatus.Pending,
                 CreatedAt = DateTime.UtcNow
             };
@@ -72,7 +74,6 @@ namespace DonationAPI.Services
             beneficiary.Status = dto.Status;
             await _context.SaveChangesAsync();
 
-            // Auto-create the Aid Delivery record so it shows up under "Aid Received"
             if (dto.Status == BeneficiaryStatus.FundsDisbursed
                 && !wasAlreadyDisbursed
                 && beneficiary.ApplicationId.HasValue)

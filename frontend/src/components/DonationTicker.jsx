@@ -36,11 +36,17 @@ export default function DonationTicker() {
       <style>{`
         .ticker-wrap {
           overflow: hidden;
-          background: #eff6ff;
-          border-top: 1px solid #dbeafe;
-          border-bottom: 1px solid #dbeafe;
+          background: #f0fdf4;
+          border-top: 1px solid #bbf7d0;
+          border-bottom: 1px solid #bbf7d0;
           padding: 12px 0;
           white-space: nowrap;
+          transition: background 0.2s ease, border-color 0.2s ease;
+        }
+        [data-theme="dark"] .ticker-wrap {
+          background: #0f2419;
+          border-top: 1px solid #14532d;
+          border-bottom: 1px solid #14532d;
         }
         .ticker-track {
           display: inline-flex;
@@ -54,12 +60,18 @@ export default function DonationTicker() {
           font-size: 14px;
           color: #1f2937;
         }
+        [data-theme="dark"] .ticker-item {
+          color: #e5e7eb;
+        }
         .ticker-amount {
-          color: #2563eb;
+          color: #16a34a;
           font-weight: 700;
         }
+        [data-theme="dark"] .ticker-amount {
+          color: #4ade80;
+        }
         .ticker-dot {
-          color: #3b82f6;
+          color: #22c55e;
           margin-left: 10px;
         }
         @keyframes ticker-scroll {

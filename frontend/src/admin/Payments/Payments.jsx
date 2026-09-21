@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import Sidebar from '../../components/Sidebar';
+import Topbar from '../../components/Topbar';
 import Loader from '../../components/Loader';
 import { paymentService } from '../../services/paymentService';
 import { toast } from 'react-toastify';
@@ -8,7 +8,6 @@ import {
   FileText, CheckCircle2, Trash2, MessageCircle,
 } from 'lucide-react';
 
-/* small UPI-style flag icon (saffron/green) */
 function UpiIcon() {
   return (
     <svg width="15" height="15" viewBox="0 0 14 14">
@@ -65,11 +64,10 @@ export default function AdminPayments() {
   };
 
   return (
-    <div style={{ display: 'flex' }}>
-      <Sidebar />
-      <div style={{ flex: 1, padding: 30, background: '#f8fafc', minHeight: '100vh', position: 'relative' }}>
+    <div style={{ background: '#f8fafc', minHeight: '100vh' }}>
+      <Topbar />
+      <div style={{ padding: 30, position: 'relative' }}>
 
-        {/* Header banner */}
         <div
           style={{
             position: 'relative',
@@ -87,7 +85,6 @@ export default function AdminPayments() {
           <div style={{ width: 40, height: 3, borderRadius: 2, background: '#2563eb', marginTop: 8, position: 'relative', zIndex: 1 }} />
         </div>
 
-        {/* Table card */}
         <div className="card" style={{ padding: 0, overflow: 'hidden', borderRadius: 14, position: 'relative' }}>
           <DotGrid style={{ position: 'absolute', left: -6, bottom: -6, opacity: 0.5, zIndex: 0 }} />
           {loading ? (
@@ -193,7 +190,6 @@ export default function AdminPayments() {
           )}
         </div>
 
-        {/* Floating chat bubble */}
         <div
           style={{
             position: 'fixed', bottom: 24, right: 24,
